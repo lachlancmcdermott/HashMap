@@ -10,28 +10,37 @@ namespace HashMap
 {
     public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        public List<(TKey, TValue)> hashList = new List<(TKey, TValue)>();
+        public List<(TKey, TValue)>[] hashList = new List<(TKey, TValue)>[5];
         public TValue this[TKey key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public ICollection<TKey> Keys => throw new NotImplementedException();
 
         public ICollection<TValue> Values => throw new NotImplementedException();
 
-        public int Count => throw new NotImplementedException();
+        public int Count;
 
         public bool IsReadOnly => throw new NotImplementedException();
 
-        IEqualityComparer<TKey> equalityComparer => default;
+        IEqualityComparer<TKey> equalityComparer => EqualityComparer<TKey>.Default;
 
         public void Add(TKey key, TValue value)
         {
-            int hash = equalityComparer.GetHashCode(key);
-            if(hash > hashList.Capacity)
+            int hash = Math.Abs(equalityComparer.GetHashCode(key)) % hashList.Length;
+            Count++; 
+            
+            if(hashList.Count >= hashList.Length)
             {
                 //increase capacity of list, check that it has enough capacity
                 //rehash data in previous list, add all data to new list
                 //replace and set new list to previous list
-                hashList.Capacity
+
+                List<(TKey, TValue)> newHashList = new List<(TKey, TValue)>(hashList.Length * 2);
+                for (int i = 0; i < hashList.Count; i++)
+                {
+                    int temp = Math.Abs(equalityComparer.GetHashCode(hashList[i].Item1)) % newHashList.Capacity;
+                    newHashList.Insert(temp, hashList[i]);
+                }
+                hashList = newHashList;
             }
             hashList.Insert(hash, (key, value));
         }

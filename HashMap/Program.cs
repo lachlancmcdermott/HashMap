@@ -10,8 +10,6 @@ namespace HashMap
             hashMap.Add("cat", 1);
             hashMap.Add("dog", 2);
             hashMap.Add("frog", 3);
-
-            
         }
     }
 }
