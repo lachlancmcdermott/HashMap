@@ -22,16 +22,25 @@ namespace HashMap
                 int hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
                 for (int i = 0; i < buckets[hash].Count; i++)
                 {
-                    if (buckets[hash].Contains)
+                    LinkedListNode<(TKey, TValue)> curr = buckets[hash].First;
+                    if (curr.Next.Value.Item1.Equals(key))
+                    {
+                        return curr.Value.Item2;
+                    }
                 }
-                buckets[hash])
-                {
-                    return 
-                }
-                return
+                throw new Exception("Key doesn't exist in hash map");
             }
             set
             {
+                int hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
+                for (int i = 0; i < buckets[hash].Count; i++)
+                {
+                    LinkedListNode<(TKey, TValue)> curr = buckets[hash].First;
+                    if(curr.Next.Value.Item1.Equals(key))
+                    {
+                        curr.Next.Value.Item2 = value;
+                    }
+                }
                 throw new NotImplementedException();
             }
         }
@@ -111,15 +120,15 @@ namespace HashMap
         }
         public bool Remove(TKey key)
         {
-            for (int i = 0; i < hashList.Length; i++)
+            for (int i = 0; i < buckets.Length; i++)
             {
-                if (hashList[i] != null)
+                if (buckets[i] != null)
                 {
-                    foreach (var item in hashList[i])
+                    foreach (var item in buckets[i])
                     {
                         if (item.Item1.Equals(key))
                         {
-                            hashList[i].Remove(item);
+                            buckets[i].Remove(item);
                             return true;
                         }
                     }
