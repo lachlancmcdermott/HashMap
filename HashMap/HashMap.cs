@@ -32,16 +32,20 @@ namespace HashMap
             }
             set
             {
+                bool exists = false;
                 int hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
+                LinkedListNode<(TKey, TValue)> curr = buckets[hash].First;
+
                 for (int i = 0; i < buckets[hash].Count; i++)
                 {
-                    LinkedListNode<(TKey, TValue)> curr = buckets[hash].First;
-                    if(curr.Next.Value.Item1.Equals(key))
+                    if (curr.Value.Item1.Equals(key))
                     {
-                        curr.Next.Value.Item2 = value;
+                        curr.ValueRef.Item2 = value;
+                        exists = true;
                     }
+                    curr = curr.Next;
                 }
-                throw new NotImplementedException();
+                if (!exists) Add(key, value);
             }
         }
 
@@ -57,15 +61,15 @@ namespace HashMap
         {
             int hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
             keyCount++;
-
+            
             if(keyCount > buckets.Length)
             {
                 //resize list   
                 LinkedList<(TKey, TValue)>[] newList = new LinkedList<(TKey, TValue)>[buckets.Length * 2];
                 for (int i = 0; i < buckets.Length; i++)
                 {
-                    if (buckets[i] != null)
-                    {
+                    //if (buckets[i] != null)
+                    //{
                         foreach (var item in buckets[i])
                         {
                             int tempHash = Math.Abs(equalityComparer.GetHashCode(buckets[i].Last.Value.Item1)) % buckets.Length;
@@ -80,7 +84,7 @@ namespace HashMap
                             }
                         }
                         buckets[i].RemoveLast();
-                    }
+                    //}
                 }
                 buckets = newList;
             }
@@ -136,18 +140,10 @@ namespace HashMap
             }
             return false;
         }
-
         public bool Resize()
         {
             return false;
         }
-
-        public bool Indexing(TKey key)
-        {
-            throw new Exception("Key does not exist");
-
-        }
-
         bool IDictionary<TKey, TValue>.ContainsKey(TKey key)
         {
             throw new NotImplementedException();

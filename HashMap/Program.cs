@@ -1,27 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HashMap
 {
+    //class Garbage
+    //{
+    //    int max;
+
+    //    public Garbage(int max) => this.max = max;
+
+    //    public override int GetHashCode()
+    //    {
+    //        return Random.Shared.Next(max);
+    //    }
+    //    public override bool Equals(object? obj)
+    //    {
+    //        return true;
+    //    }
+    //}    
+
     internal class Program
     {
         static void Main(string[] args)
         {
-            HashMap<string, int> hashMap = new HashMap<string, int>();
-
-            hashMap.Add("a", 1);
-            hashMap.Add("b", 2);    
-            hashMap.Add("c", 3);
-            hashMap.Add("d", 4);
-            hashMap.Add("e", 5);
-
-            bool contains = hashMap.Contains(new KeyValuePair<string, int>("a", 1));
-
-            hashMap.Remove("a");
-            hashMap.Remove("b");
-            hashMap.Remove("c");
-
-            bool indexing = hashMap.Indexing("d");
         }
     }
 }
