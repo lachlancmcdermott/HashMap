@@ -24,6 +24,7 @@ namespace HashMap
     {
         static void Main(string[] args)
         {
+
         }
     }
 }

@@ -12,10 +12,10 @@ namespace HashMap
 {
     public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        #nullable enable
+#nullable enable
         public LinkedList<(TKey, TValue)>[] buckets = new LinkedList<(TKey, TValue)>[3];
 
-        public TValue this [TKey key]
+        public TValue this[TKey key]
         {
             get
             {
@@ -59,20 +59,20 @@ namespace HashMap
 
         public void Add(TKey key, TValue value)
         {
-            int hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
+            int hash; 
             keyCount++;
-            
-            if(keyCount > buckets.Length)
+
+            if (keyCount > buckets.Length)
             {
                 //resize list   
                 LinkedList<(TKey, TValue)>[] newList = new LinkedList<(TKey, TValue)>[buckets.Length * 2];
                 for (int i = 0; i < buckets.Length; i++)
                 {
-                    //if (buckets[i] != null)
-                    //{
+                    if (buckets[i] != null)
+                    {
                         foreach (var item in buckets[i])
                         {
-                            int tempHash = Math.Abs(equalityComparer.GetHashCode(buckets[i].Last.Value.Item1)) % buckets.Length;
+                            int tempHash = Math.Abs(equalityComparer.GetHashCode(buckets[i].Last.Value.Item1)) % newList.Length;
                             if (newList[tempHash] == null)
                             {
                                 newList[tempHash] = new LinkedList<(TKey, TValue)>();
@@ -84,12 +84,14 @@ namespace HashMap
                             }
                         }
                         buckets[i].RemoveLast();
-                    //}
+                    }
                 }
                 buckets = newList;
             }
+            hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
             if (buckets[hash] != null && buckets[hash].First != null)
             {
+                
                 LinkedListNode<(TKey, TValue)> temp = buckets[hash].Find((key, value));
                 if (temp == null)
                 {
@@ -103,9 +105,10 @@ namespace HashMap
             }
             if (buckets[hash] == null)
             {
+                hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
                 buckets[hash] = new LinkedList<(TKey, TValue)>();
                 buckets[hash].AddLast(new LinkedListNode<(TKey, TValue)>((key, value)));
-
+                return;
             }
         }
         public bool Contains(KeyValuePair<TKey, TValue> Item)
@@ -142,33 +145,33 @@ namespace HashMap
         }
         public bool Resize()
         {
-            return false;
+        return false;
         }
         bool IDictionary<TKey, TValue>.ContainsKey(TKey key)
         {
-            throw new NotImplementedException();
+        throw new NotImplementedException();
         }
         bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
         {
-            throw new NotImplementedException();
+        throw new NotImplementedException();
         }
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        void ICollection<KeyValuePair< TKey, TValue >>.Add(KeyValuePair < TKey, TValue > item)
         {
             throw new NotImplementedException();
         }
-        void ICollection<KeyValuePair<TKey, TValue>>.Clear()
+        void ICollection<KeyValuePair< TKey, TValue >>.Clear()
         {
             throw new NotImplementedException();
         }
-        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        void ICollection<KeyValuePair< TKey, TValue >>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        bool ICollection<KeyValuePair< TKey, TValue >>.Remove(KeyValuePair < TKey, TValue > item)
         {
             throw new NotImplementedException();
         }
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair< TKey, TValue >>.GetEnumerator()
         {
             throw new NotImplementedException();
         }
