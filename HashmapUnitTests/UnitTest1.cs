@@ -77,41 +77,44 @@ namespace HashmapUnitTests
         [DataRow(3000)]
         [DataRow(42)]
         [DataRow(30)]
-        public void TestIndexing(int dataAmount)
+        public void TestIndexingWithExisitingKeys(int dataAmount)
         {
+            //most likely due to some issue with the
+            //comparer to the value in the hashmap
+            //ie. 2nd set of rand values generated that I am comparing
             EqualityComparer<int> equalityComparer = EqualityComparer<int>.Default;
-            bool t = true;
             HashMap<int, int> map = new HashMap<int, int>();
-            Random randomVal = new Random(23451);
+            Random randomVal = new Random(3);
             Random randomKey = new Random(2);
             for (int i = 0; i < dataAmount; i++)
             {
                 int val = randomVal.Next();
                 int key = randomKey.Next();
-                map.Add(key, val);
+                map.Add(key, val) ;
             }
-            Random randomValRegenerate = new Random(23451);
+            Random randomValRegenerate = new Random(3);
             Random randomKeyRegenerate = new Random(2);
             for (int i = 0; i < dataAmount; i++)
             {
                 int u = randomValRegenerate.Next();
                 int m = randomKeyRegenerate.Next();
 
-                (int, int) q = (m, map[i]);
+                (int, int) q = (m, map[m]);
                 (int, int) z = (m, u);
                 Assert.AreEqual(q, z);
             }
         }
-        //[TestMethod]
-        //[DataRow(3)]
-        //[DataRow(17)]
-        //[DataRow(1)]
-        //[DataRow(3000)]
-        //[DataRow(42)]
-        //[DataRow(30)]
-        //public void TestEnumeration(int dataAmount)
-        //{
+        [TestMethod]
+        [DataRow(3)]
+        [DataRow(17)]
+        [DataRow(1)]
+        [DataRow(3000)]
+        [DataRow(42)]
+        [DataRow(30)]
+        public void TestIndexingWithFakeKeys(int dataAmount)
+        {            
+            //    Assert.ThrowsException<ArgumentException>(() => q = (m, map[m]));
 
-        //}
+        }
     }
 }

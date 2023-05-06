@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -17,18 +18,23 @@ namespace HashMap
 
         public TValue this[TKey key]
         {
+#nullable enable
             get
             {
-                int hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
-                for (int i = 0; i < buckets[hash].Count; i++)
+                int hash = Math.Abs(equalityComparer.GetHashCode(key!)) % buckets.Length;
+                if (buckets[hash] != null)
                 {
-                    LinkedListNode<(TKey, TValue)> curr = buckets[hash].First;
-                    if (curr.Next.Value.Item1.Equals(key))
+                    LinkedListNode<(TKey, TValue)> curr = buckets[hash].First!;
+                    for (int i = 0; i < buckets[hash].Count; i++)
                     {
-                        return curr.Value.Item2;
+                        if (curr!.Value.Item1!.Equals(key))
+                        {
+                            return curr.Value.Item2; 
+                        }
+                        curr = curr.Next!;
                     }
                 }
-                throw new Exception("Key doesn't exist in hash map");
+                throw new ArgumentException("Key doesn't exist in hash map");
             }
             set
             {
@@ -59,39 +65,42 @@ namespace HashMap
 
         public void Add(TKey key, TValue value)
         {
-            int hash; 
+            int hash;
             keyCount++;
 
+            //REHASH
             if (keyCount > buckets.Length)
             {
-                //resize list   
                 LinkedList<(TKey, TValue)>[] newList = new LinkedList<(TKey, TValue)>[buckets.Length * 2];
                 for (int i = 0; i < buckets.Length; i++)
                 {
                     if (buckets[i] != null)
                     {
-                        foreach (var item in buckets[i])
+
+                        while (buckets[i].Count > 0)
                         {
-                            int tempHash = Math.Abs(equalityComparer.GetHashCode(buckets[i].Last.Value.Item1)) % newList.Length;
+                            LinkedListNode<(TKey, TValue)> curr = buckets[i].First;
+                            int tempHash = Math.Abs(equalityComparer.GetHashCode(curr.Value.Item1) % newList.Length);
+
                             if (newList[tempHash] == null)
                             {
-                                newList[tempHash] = new LinkedList<(TKey, TValue)>();
-                                newList[tempHash].AddLast(new LinkedListNode<(TKey, TValue)>((item.Item1, item.Item2)));
+                                LinkedList<(TKey, TValue)> t = new LinkedList<(TKey, TValue)>();
+                                newList[tempHash] = t;
                             }
-                            else
-                            {
-                                newList[tempHash].AddLast(new LinkedListNode<(TKey, TValue)>((item.Item1, item.Item2)));
-                            }
+
+                            buckets[i].Remove(curr);
+                            newList[tempHash].AddLast(curr);
+                            //curr = curr.Next;
                         }
-                        buckets[i].RemoveLast();
                     }
                 }
-                buckets = newList;
             }
+
+            //ADDING
             hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
             if (buckets[hash] != null && buckets[hash].First != null)
             {
-                
+
                 LinkedListNode<(TKey, TValue)> temp = buckets[hash].Find((key, value));
                 if (temp == null)
                 {
@@ -113,17 +122,19 @@ namespace HashMap
         }
         public bool Contains(KeyValuePair<TKey, TValue> Item)
         {
-            for (int i = 0; i < buckets.Length; i++)
+            bool t = false;
+            int hash = Math.Abs(equalityComparer.GetHashCode(Item.Key)) % buckets.Length;
+            if (buckets[hash] != null)
             {
-                if (buckets[i] != null)
+                foreach (var item in buckets[hash])
                 {
-                    foreach (var item in buckets[i])
-                    {
-                        return item.Item1.Equals(Item.Key) && item.Item2.Equals(Item.Value);
-                    }
+                   if(item.Item1.Equals(Item.Key) && item.Item2.Equals(Item.Value))
+                   {
+                        t = true;
+                   }
                 }
             }
-            return false;
+            return t;
         }
         public bool Remove(TKey key)
         {
