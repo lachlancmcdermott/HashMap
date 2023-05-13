@@ -10,8 +10,6 @@ namespace HashmapUnitTests
     [TestClass]
     public class UnitTest1
     {
-
-
         [TestMethod]
         [DataRow(3)]
         [DataRow(17)]
@@ -77,11 +75,9 @@ namespace HashmapUnitTests
         [DataRow(3000)]
         [DataRow(42)]
         [DataRow(30)]
+
         public void TestIndexingWithExisitingKeys(int dataAmount)
         {
-            //most likely due to some issue with the
-            //comparer to the value in the hashmap
-            //ie. 2nd set of rand values generated that I am comparing
             EqualityComparer<int> equalityComparer = EqualityComparer<int>.Default;
             HashMap<int, int> map = new HashMap<int, int>();
             Random randomVal = new Random(3);
@@ -111,9 +107,9 @@ namespace HashmapUnitTests
         [DataRow(3000)]
         [DataRow(42)]
         [DataRow(30)]
-        public void TestIndexingWithFakeKeys(int dataAmount)
+
+        public void TestEnumeration(int dataAmount)
         {            
-            //    Assert.ThrowsException<ArgumentException>(() => q = (m, map[m]));
 
         }
     }

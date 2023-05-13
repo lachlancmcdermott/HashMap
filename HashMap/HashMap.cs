@@ -71,15 +71,16 @@ namespace HashMap
             //REHASH
             if (keyCount > buckets.Length)
             {
+             
+                //LinkedListNode<(TKey, TValue)> curr = new LinkedListNode<(TKey, TValue)>((default, default));
                 LinkedList<(TKey, TValue)>[] newList = new LinkedList<(TKey, TValue)>[buckets.Length * 2];
                 for (int i = 0; i < buckets.Length; i++)
                 {
                     if (buckets[i] != null)
                     {
-
-                        while (buckets[i].Count > 0)
+                        var curr = buckets[i].First;
+                        while(buckets[i].Count >= 0)
                         {
-                            LinkedListNode<(TKey, TValue)> curr = buckets[i].First;
                             int tempHash = Math.Abs(equalityComparer.GetHashCode(curr.Value.Item1) % newList.Length);
 
                             if (newList[tempHash] == null)
@@ -87,13 +88,17 @@ namespace HashMap
                                 LinkedList<(TKey, TValue)> t = new LinkedList<(TKey, TValue)>();
                                 newList[tempHash] = t;
                             }
-
-                            buckets[i].Remove(curr);
-                            newList[tempHash].AddLast(curr);
-                            //curr = curr.Next;
+                            newList[tempHash].AddLast(new LinkedListNode<(TKey, TValue)>((curr.Value.Item1, curr.Value.Item2)));
+                            buckets[i].RemoveFirst();
+                            if (buckets[i].First == null)
+                            {
+                                break;
+                            }
+                            curr = buckets[i].First;
                         }
                     }
                 }
+                buckets = newList;
             }
 
             //ADDING
@@ -117,7 +122,6 @@ namespace HashMap
                 hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
                 buckets[hash] = new LinkedList<(TKey, TValue)>();
                 buckets[hash].AddLast(new LinkedListNode<(TKey, TValue)>((key, value)));
-                return;
             }
         }
         public bool Contains(KeyValuePair<TKey, TValue> Item)
