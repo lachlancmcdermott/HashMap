@@ -11,14 +11,11 @@ using System.Transactions;
 
 namespace HashMap
 {
-    public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
+        public class HashMap<TKey, TValue> : IEnumerable<TKey>
     {
-#nullable enable
         public LinkedList<(TKey, TValue)>[] buckets = new LinkedList<(TKey, TValue)>[3];
-
         public TValue this[TKey key]
         {
-#nullable enable
             get
             {
                 int hash = Math.Abs(equalityComparer.GetHashCode(key!)) % buckets.Length;
@@ -38,12 +35,14 @@ namespace HashMap
             }
             set
             {
+#nullable enable
                 bool exists = false;
                 int hash = Math.Abs(equalityComparer.GetHashCode(key)) % buckets.Length;
                 LinkedListNode<(TKey, TValue)> curr = buckets[hash].First;
 
                 for (int i = 0; i < buckets[hash].Count; i++)
                 {
+#nullable enable
                     if (curr.Value.Item1.Equals(key))
                     {
                         curr.ValueRef.Item2 = value;
@@ -56,13 +55,27 @@ namespace HashMap
         }
 
         private int keyCount = 0;
-        public ICollection<TKey> Keys => throw new NotImplementedException();
-        public ICollection<TValue> Values => throw new NotImplementedException();
-        public bool IsReadOnly => throw new NotImplementedException();
+
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                List<TKey> newKeys = new List<TKey>();
+                foreach (var n in buckets)
+                {
+                    if (n != null)
+                    {
+                        foreach (var kvp in n)
+                        {
+                            newKeys.Add(kvp.Item1);
+                        }
+                    }
+                }
+
+                return newKeys;
+            }
+        }
         IEqualityComparer<TKey> equalityComparer => EqualityComparer<TKey>.Default;
-
-        int ICollection<KeyValuePair<TKey, TValue>>.Count => throw new NotImplementedException();
-
         public void Add(TKey key, TValue value)
         {
             int hash;
@@ -158,41 +171,48 @@ namespace HashMap
             }
             return false;
         }
-        public bool Resize()
+
+        public IEnumerator<TKey> GetEnumerator()
         {
-        return false;
-        }
-        bool IDictionary<TKey, TValue>.ContainsKey(TKey key)
-        {
-        throw new NotImplementedException();
-        }
-        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
-        {
-        throw new NotImplementedException();
-        }
-        void ICollection<KeyValuePair< TKey, TValue >>.Add(KeyValuePair < TKey, TValue > item)
-        {
-            throw new NotImplementedException();
-        }
-        void ICollection<KeyValuePair< TKey, TValue >>.Clear()
-        {
-            throw new NotImplementedException();
-        }
-        void ICollection<KeyValuePair< TKey, TValue >>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-        bool ICollection<KeyValuePair< TKey, TValue >>.Remove(KeyValuePair < TKey, TValue > item)
-        {
-            throw new NotImplementedException();
-        }
-        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair< TKey, TValue >>.GetEnumerator()
-        {
-            throw new NotImplementedException();
+            return new Enumerator(this.Keys);
         }
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
+        }
+
+        public struct Enumerator : IEnumerator<TKey>
+        {
+            TKey curr;
+            IEnumerator<TKey> myEnum;
+            ICollection<TKey> myKeys;
+            int hasHeadBeenReached;
+            public TKey Current { get; private set; }
+
+            public Enumerator(ICollection<TKey> keys)
+            {
+                myEnum = keys.GetEnumerator();
+                Current = default;
+                myKeys  = keys;
+                curr = default;
+                hasHeadBeenReached = 0;
+            }
+            object IEnumerator.Current => Current;
+            public bool MoveNext()
+            {
+                bool ret = false;
+                ret = myEnum.MoveNext();
+                Current = myEnum.Current;
+                return ret;
+            }
+            public void Dispose()
+            {
+
+            }
+            public void Reset()
+            {
+
+            }
         }
     }
 }

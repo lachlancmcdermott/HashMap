@@ -4,27 +4,22 @@ using System.Linq;
 
 namespace HashMap
 {
-    //class Garbage
-    //{
-    //    int max;
-
-    //    public Garbage(int max) => this.max = max;
-
-    //    public override int GetHashCode()
-    //    {
-    //        return Random.Shared.Next(max);
-    //    }
-    //    public override bool Equals(object? obj)
-    //    {
-    //        return true;
-    //    }
-    //}    
-
     internal class Program
     {
         static void Main(string[] args)
         {
+            HashMap<int, int> map = new HashMap<int, int>();
+            map.Add(21, 32);
+            map.Add(-2, 42);
+            map.Add(0, 62);
+            map.Add(12, 1232);
+            map.Add(9, 532);
 
+
+            foreach (var n in map)
+            {
+                Console.WriteLine(n);
+            }
         }
     }
 }
