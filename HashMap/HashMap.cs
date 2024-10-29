@@ -11,7 +11,7 @@ using System.Transactions;
 
 namespace HashMap
 {
-        public class HashMap<TKey, TValue> : IEnumerable<TKey>
+    public class HashMap<TKey, TValue> : IEnumerable<TKey>
     {
         public LinkedList<(TKey, TValue)>[] buckets = new LinkedList<(TKey, TValue)>[3];
         public TValue this[TKey key]
